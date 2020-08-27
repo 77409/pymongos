@@ -116,7 +116,6 @@ class mongodb(object):
     def search(self, limit=False, offset=0, _cols_={}, **kwargs):
         self.login()
         def __(kwargs):
-            # {'xxx':{'$regex':'xxx'}}
             return { filed :{'$regex': keyword} for filed,keyword in kwargs.items() }
 
         if not limit:
@@ -129,9 +128,6 @@ class mongodb(object):
 
     def len_search(self, **kwargs):
         self.login()
-        # def __(kwargs):
-        #     # {'xxx':{'$regex':'xxx'}}
-        #     return { filed :{'$regex': str(keyword)} for filed,keyword in kwargs.items() }
         return self._table.find(kwargs).count()
 
     def __len__(self):
@@ -163,7 +159,6 @@ class mongodb(object):
         return self._table.remove({})
 
     def __contains__(self, _id):
-        # self.table.find( { “lectures.lectures_count” : { $exists: True } } )
         return bool(self[_id])
 
     def __getitem__(self, _id):
