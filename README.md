@@ -113,6 +113,9 @@ table.get(limit=10, offset=1)
 ### 搜索
 ```
 table.search(name="4ting")
+```
+### 搜索分段
+```
 table.search(limit=10, offset=0, **{"字段1" : "数据"})
 ```
 
