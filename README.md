@@ -26,6 +26,9 @@ git clone
 ```
 from pymongos import mongodb
 table = mongodb(host='127.0.0.1', db="test", table="test")
+
+# 无日志
+table = mongodb(host='127.0.0.1', db="test", table="test", level="debug")
 ```
 
 ### 密码连接
@@ -80,6 +83,12 @@ if "test" in table:
     print("yes")
 ```
 
+### 获取所有_id
+```
+table.keys()
+```
+
+
 ### 根据_id取
 ```
 data = table["test"]
@@ -118,4 +127,33 @@ table.search(name="4ting")
 ```
 table.search(limit=10, offset=0, **{"字段1" : "数据"})
 ```
+
+## 其他操作
+### 获取所有库名
+```
+table.dbs
+```
+
+### 获取该库下所有collection
+```
+table.collection
+```
+
+### 获取所有字段名
+```
+table.colums
+```
+
+### 关闭日志
+```
+table.none_log()
+```
+
+### 开启日志
+```
+table.en_log()
+```
+
+
+
 
