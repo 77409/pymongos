@@ -74,6 +74,10 @@ class mongodb(object):
         self.is_login = True
         return True
 
+    def drop(self):
+        log("删除{}".format(str(self)), level=self.level)
+        self._table.drop()
+
     def __repr__(self):
         return "mongodb://{host}:{port}/{db}/{table}".format( **self.__dict__)
 
@@ -164,21 +168,23 @@ class mongodb(object):
     def __contains__(self, _id):
         return bool(self[_id])
 
-    def get_order(self, params):
+    def get_params(self, params):
         if type(params) is str:
             desc = params[0] == '!'
             key  = params.strip("!")
             return {"order" : key, "desc" : desc}
+        if type(params) is dict:
+            return params
         return {"order" : "_id", "desc" : params == -1}
 
     def __getitem__(self, _id):
         self.login()
         if type(_id) is slice:
             assert (_id.stop or 0) >= (_id.start or 0)
-            log("分片操作， [{}:{}:{}]".format(_id.start, _id.stop, _id.step), level=self.level)
+            # log("分片操作， [{}:{}:{}]".format(_id.start, _id.stop, _id.step), level=self.level)
             offset = _id.start or 0
             limit  = (_id.stop or 0) - offset
-            kwargs = self.get_order(_id.step)
+            kwargs = self.get_params(_id.step)
             return self.get(offset=offset, limit=limit, **kwargs)
 
         data = self._table.find({"_id":_id})
@@ -186,6 +192,17 @@ class mongodb(object):
         if data.count() <= 0:
             return None
         return [_ for _ in data][0]
+
+    def __or__(self, conditions):
+        self.login()
+        data = self._table.find({
+                                    "$or": [
+                                        {
+                                            k:v
+                                        } for k,v in conditions.items()
+                                    ]
+                                })
+        return [ _ for _ in data ]
 
     def __add__(self, item):
         data = self.format(item)
